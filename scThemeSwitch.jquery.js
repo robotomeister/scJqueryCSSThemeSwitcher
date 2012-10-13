@@ -27,6 +27,8 @@
  * 
  * @cat Plugins/scThemeSwitch
  * 
+ * @todo - future improvements: default theme, specify theme
+ * 
  * @author William Lee/william@solidcoding.com/http://www.solidcoding.com 
  */
 
@@ -39,6 +41,8 @@
                 switchAnimation: "fade", //options: fade/toggle
                 switchAnimationTime: 800, //options: jQuery duration values
                 switchHandler: "scClickableThemeSwitcher", //CSS class for all clickable theme switchers
+                switchCookieName: "scThemeSwitchCookie", //CSS class for all clickable theme switchers
+                switchThemeClass: "scThemeSwitchClass" //CSS class for all clickable theme switchers
             };
             
             this.construct = function (themes, settings) {
@@ -49,21 +53,27 @@
                     //themes is array of strings representing CSS classes that should be triggered on/off
                     scope.themes = themes;
                     scope.currentTheme = null;
-                        
-                    //load cookie if exists. if exists, load and set theme
-                    
-                    //if not, try to load first theme, if not exist, quit
-                    if( typeof themes["theme1"] != "undefined" ) {   
-                        setTheme(scope, themes["theme1"]);   
-                    }
-                    else {                   
-                        return;    
-                    } 
-                    
+                      
                     // new blank config object
                     scope.config = {};
                     // merge and extend.
-                    config = $.extend(scope.config, $.scThemeSwitch.defaults, settings);
+                    config = $.extend(scope.config, $.scThemeSwitch.defaults, settings);                      
+                        
+                    //load cookie if exists. if exists, load and set theme
+                    var cookieVal = $.cookie(config['switchCookieName']);
+                    
+                    if(cookieVal != null) {
+                        setTheme(scope, cookieVal);   
+                    }
+                    else {
+                        //if not, try to load first theme, if not exist, quit
+                        if( typeof themes["theme1"] != "undefined" ) {   
+                            setTheme(scope, themes["theme1"]);   
+                        }
+                        else {                   
+                            return;    
+                        }                         
+                    }                    
                     
                     //enable all switchers
                     scope.find('.' + config['switchHandler']).click(
@@ -108,6 +118,14 @@
             function setTheme(scope,theme) {
                 //if no current theme, just toggle
                 if(scope.currentTheme == null) {
+                    //hide all themes
+                    scope.find('.' + scope.config['switchThemeClass']).each(
+                        function() {
+                            $(this).hide();      
+                        }
+                    );        
+                    
+                    //show selected theme
                     scope.find('.' + theme).each(
                         function() {
                             $(this).show();      
@@ -117,7 +135,7 @@
                 }
                 else {
                     //animateOut currentTheme
-                    //animateIn newTheme                                    
+                    //animateIn newTheme                                 
                     if(scope.config['switchAnimation'] == 'toggle') {
                         scope.find('.' + scope.currentTheme).each(
                             function() {
@@ -148,7 +166,7 @@
                 
                 //set theme and cookie
                 scope.currentTheme = theme;
-                
+                $.cookie(scope.config['switchCookieName'], theme, { expires: 7, path: '/' });
             }   
                                                
         }
