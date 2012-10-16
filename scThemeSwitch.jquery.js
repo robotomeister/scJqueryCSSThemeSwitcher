@@ -41,8 +41,8 @@
                 switchAnimation: "fade", //options: fade/toggle
                 switchAnimationTime: 800, //options: jQuery duration values
                 switchHandler: "scClickableThemeSwitcher", //CSS class for all clickable theme switchers
-                switchCookieName: "scThemeSwitchCookie", //CSS class for all clickable theme switchers
-                switchThemeClass: "scThemeSwitchClass" //CSS class for all clickable theme switchers
+                switchCookieName: "scThemeSwitchCookie", //cookie name for this theme switch page loads
+                switchThemeClass: "scThemeSwitchClass" //CSS class for all affected elements
             };
             
             this.construct = function (themes, settings) {
